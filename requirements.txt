@@ -1,2 +1,2 @@
-natsort
+natsort==3.2.1
 eyed3
