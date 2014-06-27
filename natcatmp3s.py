@@ -6,18 +6,21 @@ from natsort import natsorted
 
 DEBUG=True
 
+if DEBUG:
+    print "running in 'dry run' mode"
+
 DIR_NAME = 'test-audio'
 OUT_NAME = 'test-audio.mp3'
 FULL_NAME = os.path.join(DIR_NAME, OUT_NAME)
-print FULL_NAME
+print "writing to:", FULL_NAME
 
 files = os.listdir('test-audio')
 files = natsorted(files)
 
 def fwrite(target, source_filename):
     """write(read) wrapper"""
+    print "source file:", source_filename
     if DEBUG:
-        print "DRY RUN", source_filename
         return
 
     source = open(cur_name, 'r')
