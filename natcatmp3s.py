@@ -2,9 +2,11 @@
 
 import os
 
+import argparse
+
 from natsort import natsorted
 
-DEBUG=True
+DEBUG = True
 
 if DEBUG:
     print "running in 'dry run' mode"
@@ -17,6 +19,13 @@ print "writing to:", FULL_NAME
 files = os.listdir('test-audio')
 files = natsorted(files)
 
+
+def get_args():
+    parser = argparse.ArgumentParser(
+        description='Concat mp3 files and add id3 tags')
+    return parser.parse_args()
+
+
 def fwrite(target, source_filename):
     """write(read) wrapper"""
     print "source file:", source_filename
@@ -27,6 +36,7 @@ def fwrite(target, source_filename):
     target.write(source.read())
     source.close()
 
+args = get_args()
 target = open(FULL_NAME, 'w')
 
 for fl in files:
