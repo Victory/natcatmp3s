@@ -40,6 +40,11 @@ def fwrite(target, source_filename):
     target.write(source.read())
     source.close()
 
+
+def is_mp3(source_name):
+    return source_name[-3:] == 'mp3'
+
+
 def parse_dir(dirpath, target_name):
     target = open(target_name, 'w')
     full_target_name = os.path.join(dirpath, target_name)
@@ -50,10 +55,14 @@ def parse_dir(dirpath, target_name):
     files = natsorted(files)
     for fl in files:
         source_name = os.path.join(dirpath, fl)
+        if not is_mp3(source_name):
+            return
+
         if source_name == full_target_name:
             continue
         fwrite(target, source_name)
     target.close()
+
 
 def make_full_target_name(args):
     return args.target + ".mp3"
