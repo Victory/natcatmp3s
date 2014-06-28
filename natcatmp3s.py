@@ -5,6 +5,7 @@ import os
 import argparse
 
 from natsort import natsorted
+from pprint import pprint
 
 DEBUG = True
 
@@ -23,6 +24,17 @@ files = natsorted(files)
 def get_args():
     parser = argparse.ArgumentParser(
         description='Concat mp3 files and add id3 tags')
+
+    parser.add_argument(
+        "dir", nargs='*',
+        help="name of directory",
+        default=['.'])
+
+    parser.add_argument(
+        "-t", "--target",
+        required=True,
+        help="Target Prefix")
+
     return parser.parse_args()
 
 
@@ -36,13 +48,19 @@ def fwrite(target, source_filename):
     target.write(source.read())
     source.close()
 
+def parse_dir(dirpath, target):
+    for fl in files:
+        source_name = os.path.join(dirpath, fl)
+        if source_name == FULL_NAME:
+            continue
+        fwrite(target, source_name)
+
+
+def make_full_target_name(args):
+    return args.target + ".mp3"
+
 args = get_args()
-target = open(FULL_NAME, 'w')
-
-for fl in files:
-    source_name = os.path.join(DIR_NAME, fl)
-    if source_name == FULL_NAME:
-        continue
-    fwrite(target, source_name)
-
+pprint(args)
+target = open(make_full_target_name(args), 'w')
+parse_dir(DIR_NAME, target)
 target.close()
