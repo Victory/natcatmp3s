@@ -12,14 +12,6 @@ DEBUG = True
 if DEBUG:
     print "running in 'dry run' mode"
 
-DIR_NAME = 'test-audio'
-OUT_NAME = 'test-audio.mp3'
-FULL_NAME = os.path.join(DIR_NAME, OUT_NAME)
-print "writing to:", FULL_NAME
-
-files = os.listdir('test-audio')
-files = natsorted(files)
-
 
 def get_args():
     parser = argparse.ArgumentParser(
@@ -48,19 +40,25 @@ def fwrite(target, source_filename):
     target.write(source.read())
     source.close()
 
-def parse_dir(dirpath, target):
+def parse_dir(dirpath, target_name):
+    target = open(target_name, 'w')
+    full_target_name = os.path.join(dirpath, target_name)
+    if DEBUG:
+        print "full target name", full_target_name
+
+    files = os.listdir(dirpath)
+    files = natsorted(files)
     for fl in files:
         source_name = os.path.join(dirpath, fl)
-        if source_name == FULL_NAME:
+        if source_name == full_target_name:
             continue
         fwrite(target, source_name)
-
+    target.close()
 
 def make_full_target_name(args):
     return args.target + ".mp3"
 
 args = get_args()
 pprint(args)
-target = open(make_full_target_name(args), 'w')
-parse_dir(DIR_NAME, target)
-target.close()
+target_name = make_full_target_name(args)
+parse_dir(args.dir[0], target_name)
