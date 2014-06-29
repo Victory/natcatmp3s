@@ -27,6 +27,17 @@ def get_args():
         required=True,
         help="Target Prefix")
 
+    parser.add_argument(
+        "-a", "--author",
+        required=True,
+        help="Authors name")
+
+    parser.add_argument(
+        "-l", "--album",
+        required=True,
+        help="album")
+
+
     return parser.parse_args()
 
 
@@ -47,9 +58,8 @@ def is_mp3(source_name):
 
 def parse_dir(dirpath, target_name):
     target = open(target_name, 'w')
-    full_target_name = os.path.join(dirpath, target_name)
     if DEBUG:
-        print "full target name", full_target_name
+        print "full target name", target_name
 
     files = os.listdir(dirpath)
     files = natsorted(files)
@@ -58,7 +68,7 @@ def parse_dir(dirpath, target_name):
         if not is_mp3(source_name):
             return
 
-        if source_name == full_target_name:
+        if source_name == target_name:
             continue
         fwrite(target, source_name)
     target.close()
