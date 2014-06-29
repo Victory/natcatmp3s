@@ -50,7 +50,6 @@ def get_args():
         default=8888,
         help="Port to start simplehttpserver on")
 
-
     return parser.parse_args()
 
 
