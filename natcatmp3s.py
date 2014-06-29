@@ -64,10 +64,16 @@ def parse_dir(dirpath, target_name):
     target.close()
 
 
-def make_full_target_name(args):
-    return args.target + ".mp3"
+def make_full_target_name(ii, dirs):
+    of = str(len(dirs))
+    formatstr = "{0:0" + str(len(str(of))) + "d}"
+    x = str(formatstr.format(ii+1))
+    return args.target + "."  + x + "of" + of +  ".mp3"
+
 
 args = get_args()
 pprint(args)
-target_name = make_full_target_name(args)
-parse_dir(args.dir[0], target_name)
+
+for ii, curdir in enumerate(args.dir):
+    target_name = make_full_target_name(ii, args.dir)
+    parse_dir(curdir, target_name)
