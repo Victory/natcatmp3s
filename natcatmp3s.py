@@ -7,11 +7,6 @@ import argparse
 from natsort import natsorted
 from pprint import pprint
 
-DEBUG = True
-
-if DEBUG:
-    print "running in 'dry run' mode"
-
 
 def get_args():
     parser = argparse.ArgumentParser(
@@ -37,6 +32,10 @@ def get_args():
         required=True,
         help="album")
 
+    parser.add_argument(
+        "-d", "--debug",
+        action="store_true",
+        help="debug/dry run")
 
     return parser.parse_args()
 
@@ -81,9 +80,12 @@ def make_full_target_name(ii, dirs):
     return args.target + "." + x + "of" + of + ".mp3"
 
 
-args = get_args()
-pprint(args)
+if __name__ == '__main__':
 
-for ii, curdir in enumerate(args.dir):
-    target_name = make_full_target_name(ii, args.dir)
-    parse_dir(curdir, target_name)
+    args = get_args()
+    DEBUG = args.debug
+    pprint(args)
+
+    for ii, curdir in enumerate(args.dir):
+        target_name = make_full_target_name(ii, args.dir)
+        parse_dir(curdir, target_name)
