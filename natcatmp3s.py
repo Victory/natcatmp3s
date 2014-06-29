@@ -1,8 +1,10 @@
 #!/usr/bin/env python
 
 import os
-
 import argparse
+import SimpleHTTPServer
+import SocketServer
+
 import eyed3
 
 from natsort import natsorted
@@ -37,6 +39,17 @@ def get_args():
         "-d", "--debug",
         action="store_true",
         help="debug/dry run")
+
+    parser.add_argument(
+        "-s", "--start-server",
+        action="store_true",
+        help="If set start simplehttpserver")
+
+    parser.add_argument(
+        "-p", "--port",
+        default=8888,
+        help="Port to start simplehttpserver on")
+
 
     return parser.parse_args()
 
@@ -90,6 +103,13 @@ def tag(target_name, args, track_num):
     a.tag.save()
 
 
+def start_server(port=8888):
+    Handler = SimpleHTTPServer.SimpleHTTPRequestHandler
+    httpd = SocketServer.TCPServer(("", port), Handler)
+    print "serving at port", port
+    httpd.serve_forever()
+
+
 if __name__ == '__main__':
 
     args = get_args()
@@ -100,3 +120,6 @@ if __name__ == '__main__':
         target_name = make_full_target_name(ii, args.dir)
         parse_dir(curdir, target_name)
         tag(target_name, args, ii + 1)
+
+    if args.start_server:
+        start_server(int(args.port))
