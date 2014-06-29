@@ -67,8 +67,8 @@ def parse_dir(dirpath, target_name):
 def make_full_target_name(ii, dirs):
     of = str(len(dirs))
     formatstr = "{0:0" + str(len(str(of))) + "d}"
-    x = str(formatstr.format(ii+1))
-    return args.target + "."  + x + "of" + of +  ".mp3"
+    x = str(formatstr.format(ii + 1))
+    return args.target + "." + x + "of" + of + ".mp3"
 
 
 args = get_args()
