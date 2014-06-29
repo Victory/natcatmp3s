@@ -3,6 +3,7 @@
 import os
 
 import argparse
+import eyed3
 
 from natsort import natsorted
 from pprint import pprint
@@ -23,9 +24,9 @@ def get_args():
         help="Target Prefix")
 
     parser.add_argument(
-        "-a", "--author",
+        "-a", "--artist",
         required=True,
-        help="Authors name")
+        help="Artist's name")
 
     parser.add_argument(
         "-l", "--album",
@@ -80,6 +81,15 @@ def make_full_target_name(ii, dirs):
     return args.target + "." + x + "of" + of + ".mp3"
 
 
+def tag(target_name, args, track_num):
+    a = eyed3.load(target_name)
+    a.tag.artist = unicode(args.artist)
+    a.tag.album = unicode(args.album)
+    a.tag.track_num = track_num
+    a.tag.title = u"%s - %s - %s" % (track_num, args.artist, args.album)
+    a.tag.save()
+
+
 if __name__ == '__main__':
 
     args = get_args()
@@ -89,3 +99,4 @@ if __name__ == '__main__':
     for ii, curdir in enumerate(args.dir):
         target_name = make_full_target_name(ii, args.dir)
         parse_dir(curdir, target_name)
+        tag(target_name, args, ii + 1)
