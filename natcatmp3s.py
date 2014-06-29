@@ -46,7 +46,7 @@ def fwrite(target, source_filename):
     if DEBUG:
         return
 
-    source = open(cur_name, 'r')
+    source = open(source_filename, 'r')
     target.write(source.read())
     source.close()
 
