@@ -4,11 +4,13 @@ import os
 import argparse
 import SimpleHTTPServer
 import SocketServer
+import math
 
 import eyed3
 
 from natsort import natsorted
 from pprint import pprint
+from subprocess import call
 
 
 def get_args():
@@ -49,6 +51,10 @@ def get_args():
         "-p", "--port",
         default=8888,
         help="Port to start simplehttpserver on")
+
+    parser.add_argument(
+        "-b", "--bits",
+        help="instead of concatenation, break up the file into bits")
 
     return parser.parse_args()
 
@@ -109,16 +115,49 @@ def start_server(port=8888):
     httpd.serve_forever()
 
 
+def cat_files(args):
+    print "Running Concat Mode"
+    for ii, curdir in enumerate(args.dir):
+        target_name = make_full_target_name(ii, args.dir)
+        parse_dir(curdir, target_name)
+        tag(target_name, args, ii + 1)
+
+
+def split_files(args):
+    print "Running Split Mode"
+    source_file = args.dir[0]
+    num_files = int(args.bits)
+    target_file_size = int(
+        math.ceil(
+            os.path.getsize(source_file) / float(num_files)))
+
+    in_fh = open(source_file, 'r')
+    for ii in xrange(num_files):
+        target_name = make_full_target_name(ii, xrange(num_files))
+        temp_target_name = target_name + ".tmp"
+        print "Writing", target_name, target_file_size, "bytes"
+        out_fh = open(temp_target_name, 'w')
+        out_fh.write(in_fh.read(target_file_size))
+        out_fh.close()
+        print ['ffmpeg', '-i', temp_target_name, "-b", "64k", target_name]
+        call(['ffmpeg', '-i', temp_target_name, "-b", "64k", target_name])
+        os.unlink(temp_target_name)
+        tag(target_name, args, ii)
+
+    in_fh.close()
+
+
 if __name__ == '__main__':
 
     args = get_args()
     DEBUG = args.debug
     pprint(args)
 
-    for ii, curdir in enumerate(args.dir):
-        target_name = make_full_target_name(ii, args.dir)
-        parse_dir(curdir, target_name)
-        tag(target_name, args, ii + 1)
+    if args.bits:
+        split_files(args)
+    else:
+        cat_files(args)
+
 
     if args.start_server:
         start_server(int(args.port))
